@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pushitup/constants.dart';
 import 'package:pushitup/components/rounded_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'home_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
@@ -11,6 +14,12 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
+
+  final _auth = FirebaseAuth.instance;
+  
+  String email = "";
+  String password = "";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +45,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               TextField(
                 keyboardType: TextInputType.emailAddress,
                 textAlign: TextAlign.center,
-                //onChanged: ,
+                onChanged: (value) {
+                  email = value;
+                },
                 decoration:
                 kTextFieldDecoration.copyWith(hintText: 'Enter your email'),
               ),
@@ -46,7 +57,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               TextField(
                 obscureText: true,
                 textAlign: TextAlign.center,
-                //onChanged: ,
+                onChanged: (value) {
+                  password = value;
+                },
                 decoration: kTextFieldDecoration.copyWith(
                     hintText: 'Enter your password'),
               ),
@@ -54,10 +67,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 height: 24.0,
               ),
               RoundedButton(
-                title: 'Login',
+                title: 'Register',
                 colour: Color(0xFF111328),
-                onPressed: (){
-                  // button action
+                onPressed: () async {
+                  try {
+                    final newUser = await _auth.createUserWithEmailAndPassword(
+                        email: email, password: password);
+
+                    if (newUser != null) {
+                      Navigator.pushNamed(context, HomeScreen.id);
+                    }
+                  }
+                  catch (e) {
+                    print(e);
+                  }
                 },
               ),
             ],
