@@ -9,9 +9,17 @@ import 'package:pushitup/screens/leaderboard_screen.dart';
 import 'package:pushitup/screens/analytics_screen.dart';
 import 'package:pushitup/screens/goals_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:camera/camera.dart';
 
-void main() {
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    cameras = await availableCameras();
+  } on CameraException catch (e) {
+    print('Error: $e.code\nError Message: $e.message');
+  }
   runApp(PushItUp());
 }
 
@@ -27,7 +35,7 @@ class PushItUp extends StatelessWidget {
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          print('SomethingWentWrong');
+          print(snapshot.error);
         }
 
         // Once complete, show your application
@@ -45,7 +53,7 @@ class PushItUp extends StatelessWidget {
               RegistrationScreen.id: (context) => const RegistrationScreen(),
               HomeScreen.id: (context) => const HomeScreen(),
               ChallengeScreen.id: (context) => const ChallengeScreen(),
-              CameraScreen.id: (context) => const CameraScreen(),
+              CameraScreen.id: (context) => CameraScreen(cameras),
               LeaderboardScreen.id: (context) => const LeaderboardScreen(),
               AnalyticsScreen.id: (context) => const AnalyticsScreen(),
               GoalsScreen.id: (context) => const GoalsScreen(),
