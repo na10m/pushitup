@@ -1,44 +1,64 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:pushitup/screens/home_screen.dart';
 import 'screens/launch_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/registration_screen.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:camera/camera.dart';
-import 'counterhome.dart';
+import 'package:pushitup/screens/challenge_screen.dart';
+import 'package:pushitup/screens/camera_screen.dart';
+import 'package:pushitup/screens/leaderboard_screen.dart';
+import 'package:pushitup/screens/analytics_screen.dart';
+import 'package:pushitup/screens/goals_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-late List<CameraDescription> cameras;
-
-Future<Null> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
-    cameras = await availableCameras();
-  } on CameraException catch (e) {
-    print('Error: $e.code\nError Message: $e.message');
-  }
-  runApp(new PushItUp());
+  runApp(PushItUp());
 }
 
-//void main() => runApp(const PushItUp());
-
 class PushItUp extends StatelessWidget {
-  const PushItUp({Key? key}) : super(key: key);
+  PushItUp({Key? key}) : super(key: key);
+  final Future<FirebaseApp> defaultApp = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.dark().copyWith(
-        primaryColor: const Color(0xFF0A0E21),
-        scaffoldBackgroundColor: const Color(0xFF0A0E21),
-        ),
-      initialRoute: LaunchScreen.id,
-      routes: {
-        LaunchScreen.id: (context) => const LaunchScreen(),
-        LoginScreen.id: (context) => const LoginScreen(),
-        RegistrationScreen.id: (context) => const RegistrationScreen(),
-      },
+    return FutureBuilder(
+      // Initialize FlutterFire
+      future: defaultApp,
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          print('SomethingWentWrong');
+        }
 
+        // Once complete, show your application
+        if (snapshot.hasData) {
+          return MaterialApp(
+            title: 'Push It Up',
+            theme: ThemeData.dark().copyWith(
+              primaryColor: const Color(0xFF0A0E21),
+              scaffoldBackgroundColor: const Color(0xFF0A0E21),
+            ),
+            initialRoute: LaunchScreen.id,
+            routes: {
+              LaunchScreen.id: (context) => const LaunchScreen(),
+              LoginScreen.id: (context) => const LoginScreen(),
+              RegistrationScreen.id: (context) => const RegistrationScreen(),
+              HomeScreen.id: (context) => const HomeScreen(),
+              ChallengeScreen.id: (context) => const ChallengeScreen(),
+              CameraScreen.id: (context) => const CameraScreen(),
+              LeaderboardScreen.id: (context) => const LeaderboardScreen(),
+              AnalyticsScreen.id: (context) => const AnalyticsScreen(),
+              GoalsScreen.id: (context) => const GoalsScreen(),
+            },
+
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return Container(
+          child: Image.asset('images/logo.png'),
+        );
+      },
     );
   }
 }
