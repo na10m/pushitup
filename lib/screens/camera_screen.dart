@@ -20,7 +20,7 @@ class _CameraScreenState extends State<CameraScreen> {
   int _imageHeight = 0;
   int _imageWidth = 0;
   String _model = '';
-  late List<dynamic> _recognitions;
+  List<dynamic> _recognitions = ['nose'];
   @override
   void initState() {
     super.initState();
